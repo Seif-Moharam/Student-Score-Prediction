@@ -20,6 +20,12 @@ def string_to_int(df):
 data = pd.read_csv("StudentPerformanceFactors.csv")
 data = data.dropna()
 data = string_to_int(data)
+
+correlation = data.corr()["Exam_Score"]
+for feature in data.columns:
+    if abs(correlation[feature]) < 0.085:
+        data.drop(columns=[feature], inplace=True)
+
 x = data.drop("Exam_Score", axis=1)
 y = data["Exam_Score"]
 
