@@ -6,18 +6,27 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.callbacks import EarlyStopping
 
 
+def string_to_int(df):
+    mapping = {"Low": 0, "Medium": 1, "High": 2,
+               "No": 0, "Yes": 1,
+               "Public": 0, "Private": 1,
+               "Negative": 0, "Neutral": 1, "Positive": 2,
+               "High School": 0, "College": 1, "Postgraduate": 2,
+               "Near": 0, "Moderate": 1, "Far": 2,
+               "Male": 0, "Female": 1}
+    return df.replace(mapping)
+
+
 data = pd.read_csv("StudentPerformanceFactors.csv")
 data = data.dropna()
-
-x = data["Hours_Studied"]
+data = string_to_int(data)
+x = data.drop("Exam_Score", axis=1)
 y = data["Exam_Score"]
-scaler = StandardScaler()
-x = scaler.fit_transform(x.values.reshape(-1, 1))
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-
-# x_train = scaler.fit_transform(x_train)
-# x_test = scaler.transform(x_test)
+scaler = StandardScaler()
+x_train = scaler.fit_transform(x_train)
+x_test = scaler.transform(x_test)
 
 model = tf.keras.models.Sequential([
     tf.keras.layers.Dense(64, activation='relu'),
